@@ -4,11 +4,18 @@ import fs from 'fs';
 import path from 'path';
 
 function log(message: string) {
-    const logPath = path.resolve(process.cwd(), 'debug.log');
     const timestamp = new Date().toISOString();
-    fs.appendFileSync(logPath, `[${timestamp}] ${message}\n`);
-    console.log(message);
+    console.log(`[${timestamp}] ${message}`);
+    try {
+        const logPath = path.resolve(process.cwd(), 'debug.log');
+        fs.appendFileSync(logPath, `[${timestamp}] ${message}\n`);
+    } catch (e) {
+        // Ignore file system errors (e.g., read-only on Vercel)
+    }
 }
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 export async function POST(request: Request) {
     try {
